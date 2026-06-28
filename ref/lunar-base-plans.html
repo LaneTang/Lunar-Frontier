@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月球基地设想方案汇总 - Lunar Frontier 参考报告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --bg-elevated: #11141a;
+    --bg-surface: #161a21;
+    --bg-hover: #1c2128;
+    --border: #262c35;
+    --border-soft: #1a1f27;
+    --text: #e6e8ec;
+    --text-secondary: #9aa0ac;
+    --text-muted: #5c636f;
+    --accent: #ff6b3d;
+    --accent-soft: rgba(255, 107, 61, 0.10);
+    --accent-dim: rgba(255, 107, 61, 0.35);
+    --max-w: 1200px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  a { color: var(--accent); text-decoration: none; transition: opacity 0.2s; }
+  a:hover { opacity: 0.75; }
+
+  .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10, 12, 16, 0.82);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border-bottom: 1px solid var(--border-soft);
+    height: 60px;
+    display: flex; align-items: center;
+  }
+  nav .container { display: flex; align-items: center; gap: 32px; width: 100%; }
+  nav .brand { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; white-space: nowrap; color: var(--text); }
+  nav .brand span { color: var(--accent); }
+  nav .links { display: flex; gap: 22px; overflow-x: auto; scrollbar-width: none; }
+  nav .links::-webkit-scrollbar { display: none; }
+  nav .links a {
+    font-size: 13px; color: var(--text-secondary); white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace; transition: color 0.2s;
+  }
+  nav .links a:hover { color: var(--text); opacity: 1; }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 100dvh;
+    display: flex; align-items: flex-end;
+    padding: 0 0 80px;
+    overflow: hidden;
+  }
+  .hero-img {
+    position: absolute; inset: 0;
+    background: url('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Cinematic%20wide%20dark%20view%20of%20a%20lunar%20base%20outpost%20on%20the%20moon%20surface%2C%20Earth%20hanging%20in%20black%20starry%20sky%2C%20industrial%20habitat%20modules%20with%20faint%20warm%20lights%2C%20lunar%20regolith%20foreground%2C%20moody%20atmospheric%20science%20fiction%2C%20photorealistic%2C%20high%20detail%2C%20no%20text%20no%20words%20no%20letters&image_size=landscape_16_9') center/cover no-repeat;
+    z-index: 0;
+  }
+  .hero-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background:
+      linear-gradient(180deg, rgba(10,12,16,0.55) 0%, rgba(10,12,16,0.35) 40%, rgba(10,12,16,0.92) 100%),
+      linear-gradient(90deg, rgba(10,12,16,0.85) 0%, rgba(10,12,16,0.2) 60%);
+  }
+  .hero-content { position: relative; z-index: 2; }
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 7vw, 5.2rem);
+    font-weight: 700; line-height: 0.98; letter-spacing: -0.03em;
+    margin-bottom: 18px; max-width: 14ch;
+  }
+  .hero p {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--text-secondary); max-width: 52ch; font-weight: 300;
+  }
+
+  /* Agency strip below hero */
+  .agency-strip {
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+    padding: 18px 0;
+  }
+  .agency-strip .container { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+  .agency-strip .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .agency-strip .agencies { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+  .agency-strip .agencies span { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+  .agency-strip .agencies span.active { color: var(--accent); }
+
+  /* Section base */
+  section.report { padding: 100px 0; border-bottom: 1px solid var(--border-soft); }
+  .section-head { margin-bottom: 56px; }
+  .section-head .agency-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--accent); letter-spacing: 0.05em; margin-bottom: 10px; display: block;
+  }
+  .section-head h2 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 600;
+    letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 14px;
+  }
+  .section-head .subtitle { font-size: 1.1rem; color: var(--text-secondary); font-weight: 300; }
+
+  /* Source links */
+  .source-list { display: grid; gap: 0; margin-bottom: 48px; }
+  .source-item {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    padding: 14px 0; border-bottom: 1px solid var(--border-soft);
+  }
+  .source-item:last-child { border-bottom: none; }
+  .source-item .doc { font-size: 15px; color: var(--text); }
+  .source-item .link {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--accent); white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; max-width: 50%; text-align: right;
+  }
+
+  /* Timeline */
+  .timeline { display: flex; gap: 0; margin-bottom: 48px; overflow-x: auto; }
+  .timeline-step {
+    flex: 1; min-width: 140px; padding: 20px 16px;
+    border-left: 2px solid var(--border); position: relative;
+  }
+  .timeline-step:first-child { border-left-color: var(--border); }
+  .timeline-step.highlight { border-left-color: var(--accent); }
+  .timeline-step .year {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--text-muted); margin-bottom: 6px;
+  }
+  .timeline-step.highlight .year { color: var(--accent); }
+  .timeline-step .ver { font-size: 16px; font-weight: 600; color: var(--text); }
+  .timeline-step .desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* Callout */
+  .callout {
+    background: var(--bg-elevated); border-left: 3px solid var(--accent);
+    padding: 24px 28px; margin-bottom: 48px;
+  }
+  .callout .title { font-weight: 600; margin-bottom: 8px; }
+  .callout p { color: var(--text-secondary); font-size: 15px; }
+
+  /* White paper grid */
+  .paper-group { margin-bottom: 36px; }
+  .paper-group .group-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-soft);
+  }
+  .paper-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .paper-card { padding: 18px; background: var(--bg-elevated); border: 1px solid var(--border-soft); }
+  .paper-card .name { font-weight: 600; font-size: 15px; margin-bottom: 8px; color: var(--text); }
+  .paper-card .desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* Findings */
+  .findings { display: grid; gap: 0; }
+  .finding {
+    display: flex; gap: 20px; padding: 18px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .finding:last-child { border-bottom: none; }
+  .finding .num {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    color: var(--accent); min-width: 28px; padding-top: 2px;
+  }
+  .finding .text { font-size: 15px; color: var(--text-secondary); }
+  .finding .text strong { color: var(--text); font-weight: 600; }
+
+  /* SpaceX quote-centric */
+  .quote-block {
+    padding: 32px 0; border-top: 1px solid var(--border-soft);
+  }
+  .quote-block:first-of-type { border-top: none; padding-top: 0; }
+  .quote-block .context {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .quote-block blockquote {
+    font-size: clamp(1.05rem, 2vw, 1.35rem); font-weight: 400;
+    line-height: 1.45; color: var(--text); margin-bottom: 12px;
+    border-left: none; padding-left: 0; font-style: normal;
+  }
+  .quote-block .translation { font-size: 15px; color: var(--text-secondary); line-height: 1.6; }
+  .spacex-img {
+    width: 100%; height: 320px; object-fit: cover;
+    margin-bottom: 48px; display: block;
+  }
+
+  /* ILRS prose */
+  .ilrs-quote {
+    background: var(--bg-elevated); padding: 28px 32px;
+    border-left: 3px solid var(--accent); margin-bottom: 40px;
+    font-size: 15px; color: var(--text-secondary); line-height: 1.7;
+  }
+  .principle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .principle-card { padding: 20px; background: var(--bg-surface); border: 1px solid var(--border-soft); }
+  .principle-card .key { font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .principle-card .val { font-size: 14px; color: var(--text-secondary); }
+
+  /* Bento for ESA + GRU */
+  .bento-pair { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
+  .bento-card {
+    padding: 32px; background: var(--bg-elevated);
+    border: 1px solid var(--border-soft); display: flex; flex-direction: column;
+  }
+  .bento-card .tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--accent); margin-bottom: 12px;
+  }
+  .bento-card h3 { font-size: 1.4rem; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.01em; }
+  .bento-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; }
+  .bento-card .note {
+    font-size: 12px; color: var(--text-muted);
+    padding-top: 16px; border-top: 1px solid var(--border-soft); margin-top: auto;
+  }
+  .bento-card.fact-list { background: var(--bg-surface); }
+  .bento-card.fact-list dl { display: grid; gap: 12px; }
+  .bento-card.fact-list dt { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+  .bento-card.fact-list dd { font-size: 14px; color: var(--text); margin-bottom: 4px; }
+
+  /* Infrastructure tiers */
+  .tier { margin-bottom: 40px; }
+  .tier-head {
+    display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border-soft);
+  }
+  .tier-head .priority {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--accent); padding: 3px 10px;
+    background: var(--accent-soft);
+  }
+  .tier-head h3 { font-size: 1.3rem; font-weight: 600; letter-spacing: -0.01em; }
+  .tier-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .tier-item {
+    padding: 16px 18px; background: var(--bg-elevated);
+    border: 1px solid var(--border-soft); transition: border-color 0.2s;
+  }
+  .tier-item:hover { border-color: var(--accent-dim); }
+  .tier-item .sys { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+  .tier-item .src { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+  .infra-img {
+    width: 100%; height: 380px; object-fit: cover;
+    margin-bottom: 56px; display: block;
+  }
+
+  /* Comparison cards */
+  .compare-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .compare-card {
+    background: var(--bg-elevated); border: 1px solid var(--border-soft);
+    overflow: hidden;
+  }
+  .compare-card .ch {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    background: var(--bg-surface);
+  }
+  .compare-card .ch .agency { font-size: 1.2rem; font-weight: 600; }
+  .compare-card .ch .type {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text-muted); margin-top: 4px;
+  }
+  .compare-card .cb { padding: 8px 24px 20px; }
+  .compare-row { padding: 12px 0; border-bottom: 1px solid var(--border-soft); }
+  .compare-row:last-child { border-bottom: none; }
+  .compare-row .dim {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+  }
+  .compare-row .val { font-size: 14px; color: var(--text); }
+  .compare-row .val.highlight { color: var(--accent); font-weight: 500; }
+
+  /* Implications */
+  .implications-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+  .impl-card {
+    padding: 28px; background: var(--bg-elevated);
+    border: 1px solid var(--border-soft); position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .impl-card:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
+  .impl-card .big-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 2.6rem; font-weight: 600;
+    color: var(--accent); line-height: 1; margin-bottom: 16px; opacity: 0.9;
+  }
+  .impl-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+  .impl-card p strong { color: var(--text); font-weight: 600; }
+
+  /* Footer */
+  footer { padding: 60px 0 40px; border-top: 1px solid var(--border-soft); }
+  footer .container { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+  footer .info { max-width: 400px; }
+  footer .info .title { font-weight: 600; margin-bottom: 8px; }
+  footer .info p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  footer .back-top {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--text-secondary); transition: color 0.2s;
+  }
+  footer .back-top:hover { color: var(--accent); }
+
+  /* Reveal animation */
+  [data-reveal] {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [data-reveal].revealed { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    section.report { padding: 64px 0; }
+    .section-head { margin-bottom: 36px; }
+    .bento-pair { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .spacex-img, .infra-img { height: 220px; }
+    .hero { padding-bottom: 56px; }
+    .paper-grid, .tier-grid { grid-template-columns: 1fr; }
+    nav .brand { font-size: 13px; }
+    nav .links { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="brand">Lunar Frontier <span>/ Ref</span></div>
+    <div class="links">
+      <a href="#nasa">NASA</a>
+      <a href="#spacex">SpaceX</a>
+      <a href="#ilrs">ILRS</a>
+      <a href="#esa-gru">ESA / GRU</a>
+      <a href="#infra">需求</a>
+      <a href="#compare">对比</a>
+      <a href="#impl">启示</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-img" role="img" aria-label="月球表面基地概念图"></div>
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <div class="hero-label">Lunar Frontier 参考报告</div>
+    <h1>月球基地设想方案</h1>
+    <p>各主要国家和机构的一手官方信息源汇总，覆盖 NASA、SpaceX、中国 ILRS、ESA 与 GRU Space 的真实月球基地方案。</p>
+  </div>
+</header>
+
+<div class="agency-strip">
+  <div class="container">
+    <span class="label">覆盖机构</span>
+    <div class="agencies">
+      <span class="active">NASA</span>
+      <span>SpaceX</span>
+      <span>CNSA / Roscosmos</span>
+      <span>ESA</span>
+      <span>GRU Space</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+<!-- NASA -->
+<section class="report" id="nasa">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <h2>阿尔忒弥斯月球基地</h2>
+      <div class="subtitle">NASA / Artemis Base Camp / Moon to Mars Architecture</div>
+    </div>
+
+    <div data-reveal>
+      <div class="source-list">
+        <div class="source-item">
+          <span class="doc">Moon to Mars Architecture 主站</span>
+          <a class="link" href="https://www.nasa.gov/MoonToMarsArchitecture/" target="_blank" rel="noopener">nasa.gov/MoonToMarsArchitecture</a>
+        </div>
+        <div class="source-item">
+          <span class="doc">Architecture Definition Documents（架构定义文档）</span>
+          <a class="link" href="https://www.nasa.gov/moontomarsarchitecture-architecturedefinitiondocuments" target="_blank" rel="noopener">nasa.gov/ADD</a>
+        </div>
+        <div class="source-item">
+          <span class="doc">Architecture White Papers（架构白皮书）</span>
+          <a class="link" href="https://www.nasa.gov/moontomarsarchitecture-whitepapers" target="_blank" rel="noopener">nasa.gov/whitepapers</a>
+        </div>
+      </div>
+    </div>
+
+    <div data-reveal style="margin-bottom: 48px;">
+      <div class="mono" style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">ADD 版本演进</div>
+      <div class="timeline">
+        <div class="timeline-step">
+          <div class="year">2022</div>
+          <div class="ver">初版</div>
+          <div class="desc">首次架构定义</div>
+        </div>
+        <div class="timeline-step">
+          <div class="year">2023</div>
+          <div class="ver">Revision A</div>
+          <div class="desc">第一次修订</div>
+        </div>
+        <div class="timeline-step">
+          <div class="year">2024</div>
+          <div class="ver">Revision B</div>
+          <div class="desc">第二次修订</div>
+        </div>
+        <div class="timeline-step highlight">
+          <div class="year">2025</div>
+          <div class="ver">Revision C</div>
+          <div class="desc">最新版，含 2025 ACR 结果</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" data-reveal>
+      <div class="title">2026 Ignition：阶段性月球基地实施方案</div>
+      <p>NASA 举办 Ignition 活动，宣布与国家太空政策对齐的新举措，发布 Phased Moon Base Implementation 与 Moon Base User's Guide，面向工业界、学术界和国际合作伙伴，指导月球基地的分阶段实施。</p>
+    </div>
+
+    <div data-reveal>
+      <div class="paper-group">
+        <div class="group-label">基础设施能力</div>
+        <div class="paper-grid">
+          <div class="paper-card">
+            <div class="name">综合月球电力策略</div>
+            <div class="desc">识别影响月球表面发电、储能和电力共享的关键因素，随探索活动扩展这是核心能力。</div>
+          </div>
+          <div class="paper-card">
+            <div class="name">基础探索阶段通信与导航</div>
+            <div class="desc">通信和导航需求将超越初期 Artemis 任务范围，随更多区域探索而扩展。</div>
+          </div>
+          <div class="paper-card">
+            <div class="name">月球表面货运（2024）</div>
+            <div class="desc">分析月球表面货物运输的预计需求和能力差距。</div>
+          </div>
+          <div class="paper-card">
+            <div class="name">月球移动性驱动因素与需求（2024）</div>
+            <div class="desc">讨论在月球表面移动货物和资产的需求，以及影响移动系统的因素。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="paper-group">
+        <div class="group-label">站点与操作</div>
+        <div class="paper-grid">
+          <div class="paper-card">
+            <div class="name">月球站点选择（2023）</div>
+            <div class="desc">着陆点选择取决于表面条件、科学目标、光照环境、通信可用性、系统能力等。</div>
+          </div>
+          <div class="paper-card">
+            <div class="name">安全精确月球着陆（2023）</div>
+            <div class="desc">精确着陆对 crew safety、最小化站点污染风险、到达特定科学站点至关重要。</div>
+          </div>
+          <div class="paper-card">
+            <div class="name">月球物流驱动因素与需求（2023）</div>
+            <div class="desc">crewed missions 需要大量物流物品维持生命、维护系统、开展科学，组成和数量随任务显著变化。</div>
+          </div>
+          <div class="paper-card">
+            <div class="name">月面舱外活动架构驱动因素（2023）</div>
+            <div class="desc">人类重返月球将进行舱外活动，NASA 需应对月球行走的独特挑战，经验直接影响火星任务规划。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="paper-group">
+        <div class="group-label">合作与伦理</div>
+        <div class="paper-grid">
+          <div class="paper-card">
+            <div class="name">国际合作伙伴关系（2024）</div>
+            <div class="desc">阐述 NASA 如何与世界各国航天机构进行合作与协作的政策、机会和参与方式。</div>
+          </div>
+          <div class="paper-card">
+            <div class="name">负责任探索（2024）</div>
+            <div class="desc">深入探讨太空探索的伦理、法律和社会影响，以及 NASA 如何为全人类利益进行探索。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-reveal>
+      <div class="mono" style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">关键发现</div>
+      <div class="findings">
+        <div class="finding"><span class="num">01</span><span class="text"><strong>架构是活的文档</strong>：每年更新，从 2022 年至今已有 4 个版本。</span></div>
+        <div class="finding"><span class="num">02</span><span class="text"><strong>2026 年是转折点</strong>：Ignition 活动标志着从"规划"转向"分阶段实施"。</span></div>
+        <div class="finding"><span class="num">03</span><span class="text"><strong>电力是首要瓶颈</strong>：专门发布"综合月球电力策略"白皮书。</span></div>
+        <div class="finding"><span class="num">04</span><span class="text"><strong>物流是核心挑战</strong>：连续多年发布货运、移动性、物流白皮书。</span></div>
+        <div class="finding"><span class="num">05</span><span class="text"><strong>国际合作是正式架构组成部分</strong>：有专门白皮书阐述合作政策和负责任探索。</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SpaceX -->
+<section class="report" id="spacex">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <h2>月球自生长城市</h2>
+      <div class="subtitle">SpaceX / Self-Growing City / 内部信 2026-02-03</div>
+    </div>
+
+    <img class="spacex-img" data-reveal src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Futuristic%20electromagnetic%20mass%20driver%20launch%20rail%20on%20the%20lunar%20surface%2C%20long%20metal%20track%20extending%20toward%20the%20horizon%2C%20industrial%20moon%20factory%20in%20background%2C%20stark%20gray%20and%20black%20tones%2C%20engineering%20concept%20art%2C%20dramatic%20lighting%2C%20no%20text%20no%20words&image_size=landscape_4_3" alt="月球电磁质量投射器概念图">
+
+    <div data-reveal>
+      <div class="source-list" style="margin-bottom:40px;">
+        <div class="source-item">
+          <span class="doc">SpaceX 收购 xAI 内部信全文（2026-02-03）</span>
+          <a class="link" href="https://finance.sina.com.cn/stock/roll/2026-02-03/doc-inhkpvfh0440692.shtml" target="_blank" rel="noopener">finance.sina.com.cn</a>
+        </div>
+        <div class="source-item">
+          <span class="doc">路透社报道（2026-02-08）</span>
+          <a class="link" href="https://www.reuters.com/science/musk-says-spacex-prioritise-building-self-growing-city-moon-2026-02-08/" target="_blank" rel="noopener">reuters.com</a>
+        </div>
+      </div>
+    </div>
+
+    <div data-reveal>
+      <div class="quote-block">
+        <div class="context">战略愿景</div>
+        <blockquote>"SpaceX has acquired xAI to form the most ambitious, vertically-integrated innovation engine on (and off) Earth, with AI, rockets, space-based internet, direct-to-mobile device communications and the world's foremost real-time information and free speech platform."</blockquote>
+        <p class="translation">SpaceX 通过整合 AI、火箭技术、天基互联网、直连移动设备通信，打造地球及地球之外最具雄心的垂直整合创新引擎。</p>
+      </div>
+
+      <div class="quote-block">
+        <div class="context">天基数据中心到月球基地的资金逻辑</div>
+        <blockquote>"The capabilities we unlock by making space-based data centers a reality will fund and enable self-growing bases on the Moon, an entire civilization on Mars and ultimately expansion to the Universe."</blockquote>
+        <p class="translation">天基数据中心的收益资助月球自生长基地，再到火星完整文明，最终宇宙扩张。这是一条清晰的资金链。</p>
+      </div>
+
+      <div class="quote-block">
+        <div class="context">星舰运力</div>
+        <blockquote>"With launches every hour carrying 200 tons per flight, Starship will deliver millions of tons to orbit and beyond per year."</blockquote>
+        <p class="translation">每小时一次发射，每次 200 吨，每年数百万吨入轨。对比：2025 年全年全球入轨载荷仅约 3000 吨。</p>
+      </div>
+
+      <div class="quote-block">
+        <div class="context">月球制造 + 质量投射器</div>
+        <blockquote>"Factories on the Moon can take advantage of lunar resources to manufacture satellites and deploy them further into space. By using an electromagnetic mass driver and lunar manufacturing, it is possible to put 500 to 1000 TW/year of AI satellites into deep space."</blockquote>
+        <p class="translation">月球工厂利用本地资源制造卫星，通过电磁质量投射器部署到深空，每年 500-1000 太瓦的 AI 卫星，卡尔达肖夫等级实质性攀升。</p>
+      </div>
+
+      <div class="quote-block">
+        <div class="context">转向月球的原因（路透社 2026-02-08）</div>
+        <blockquote>"SpaceX has shifted its focus to building a self-growing city on the Moon, because we could achieve this in less than 10 years, while landing on Mars would take more than 20 years."</blockquote>
+        <p class="translation">月球发射周期只需几天，火星需要两年一次的行星连珠窗口。</p>
+      </div>
+    </div>
+
+    <div data-reveal>
+      <div class="mono" style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">关键发现</div>
+      <div class="findings">
+        <div class="finding"><span class="num">01</span><span class="text"><strong>月球基地不是孤立计划</strong>：是"天基数据中心到月球制造到质量投射器到深空 AI 卫星"链条的一环。</span></div>
+        <div class="finding"><span class="num">02</span><span class="text"><strong>资金闭环</strong>：天基数据中心产生收入，资助月球基地，月球工厂降低成本，更多卫星，更多收入。</span></div>
+        <div class="finding"><span class="num">03</span><span class="text"><strong>质量投射器是核心</strong>：马斯克明确提到 electromagnetic mass driver，与游戏终局目标完全一致。</span></div>
+        <div class="finding"><span class="num">04</span><span class="text"><strong>时间线激进</strong>：10 年内月球城市，2-3 年内太空 AI 算力成本低于地面。</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ILRS -->
+<section class="report" id="ilrs">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <h2>国际月球科研站</h2>
+      <div class="subtitle">CNSA / Roscosmos / International Lunar Research Station / 路线图 V1.0</div>
+    </div>
+
+    <div data-reveal>
+      <div class="source-list" style="margin-bottom:40px;">
+        <div class="source-item">
+          <span class="doc">人民日报（2021-06-17）</span>
+          <a class="link" href="http://paper.people.com.cn/rmrb/html/2021-06/17/nw.D110000renmrb_20210617_5-03.htm" target="_blank" rel="noopener">paper.people.com.cn</a>
+        </div>
+        <div class="source-item">
+          <span class="doc">人民网（2021-06-17）</span>
+          <a class="link" href="http://cpc.people.com.cn/BIG5/n1/2021/0617/c64387-32132516.html" target="_blank" rel="noopener">cpc.people.com.cn</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="ilrs-quote" data-reveal>
+      6月16日，在全球空间探索大会期间，中国国家航天局和俄罗斯国家航天集团公司共同举办了国际月球科研站路线图全球网络论坛。中俄联合发布了《国际月球科研站路线图（V1.0）》和《国际月球科研站合作伙伴指南（V1.0）》。中俄欢迎国际伙伴在国际月球科研站任务的各阶段以及阶段各层级参与项目合作。随着工作深入，中俄还会适时推出更新版本。
+    </div>
+
+    <div data-reveal>
+      <div class="mono" style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">核心原则与架构</div>
+      <div class="principle-grid">
+        <div class="principle-card">
+          <div class="key">宗旨</div>
+          <div class="val">和平利用、平等互利、共同发展</div>
+        </div>
+        <div class="principle-card">
+          <div class="key">建设方式</div>
+          <div class="val">多国合作，月球表面和月球轨道共同建设</div>
+        </div>
+        <div class="principle-card">
+          <div class="key">运行定位</div>
+          <div class="val">长期自主运行、短期有人参与，可扩展、可维护</div>
+        </div>
+        <div class="principle-card">
+          <div class="key">设施性质</div>
+          <div class="val">综合性科学实验设施</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" data-reveal>
+      <div class="title">已加入的合作伙伴</div>
+      <p>俄罗斯、巴基斯坦、阿联酋、亚太空间合作组织、尼加拉瓜、阿拉伯天文学和空间科学联盟等已签约加入，十余个国家和组织正在协议谈判中。</p>
+    </div>
+
+    <div data-reveal>
+      <div class="mono" style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">关键发现</div>
+      <div class="findings">
+        <div class="finding"><span class="num">01</span><span class="text"><strong>ILRS 是开放的</strong>：从规划到运营各阶段都欢迎国际伙伴参与。</span></div>
+        <div class="finding"><span class="num">02</span><span class="text"><strong>路线图和指南会持续更新</strong>：V1.0 只是起点。</span></div>
+        <div class="finding"><span class="num">03</span><span class="text"><strong>"长期自主运行、短期有人参与"</strong>：这一定位和 NASA 的 semi-permanent 类似，都不是"永久居住"。</span></div>
+        <div class="finding"><span class="num">04</span><span class="text"><strong>中俄联合发起</strong>：但向所有国家开放。</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ESA + GRU -->
+<section class="report" id="esa-gru">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <h2>次要参考方案</h2>
+      <div class="subtitle">ESA / GRU Space / 月球村概念与商业月球酒店</div>
+    </div>
+
+    <div class="bento-pair" data-reveal>
+      <div class="bento-card">
+        <div class="tag">ESA</div>
+        <h3>月球村 Moon Village</h3>
+        <p>由 ESA 局长 Johann-Dietrich Wörner 提出，核心理念是多国、多机构共建的国际社区，强调技术转让与国际合作。</p>
+        <p style="font-size:13px;color:var(--text-muted);">ESA 官方网站上关于 Moon Village 的专门页面较少，该概念更多通过 ESA 局长公开演讲和学术论文传播。</p>
+        <div class="note">来源：ESA 官方探索战略 / ESA Technology Strategy（2019）</div>
+      </div>
+
+      <div class="bento-card fact-list">
+        <div class="tag">GRU Space</div>
+        <h3>月球酒店</h3>
+        <dl>
+          <dt>全称</dt><dd>Galactic Resource Utilization</dd>
+          <dt>成立</dt><dd>2025 年，美国</dd>
+          <dt>创始人</dt><dd>Skyler Chan（22 岁，UC Berkeley EECS）</dd>
+          <dt>团队</dt><dd>2-10 人</dd>
+          <dt>投资</dt><dd>Y Combinator 种子轮</dd>
+          <dt>计划</dt><dd>2029 首次验证 / 2032 月球酒店开业</dd>
+          <dt>定金</dt><dd>$25 万 - $100 万</dd>
+        </dl>
+        <div class="note">主要通过媒体报道对外发声，尚无官方白皮书</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Infrastructure -->
+<section class="report" id="infra">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="agency-tag">综合分析</span>
+      <h2>建立一个真实月球城市需要什么</h2>
+      <div class="subtitle">基于 NASA ADD、SpaceX 内部信、ILRS 路线图综合</div>
+    </div>
+
+    <img class="infra-img" data-reveal src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Isometric%20technical%20illustration%20of%20a%20lunar%20colony%20infrastructure%20cross-section%2C%20showing%20underground%20habitats%2C%20solar%20panels%2C%20power%20systems%2C%20greenhouses%2C%20landing%20pads%2C%20industrial%20factories%2C%20connected%20by%20tunnels%2C%20dark%20background%20with%20subtle%20blue%20glowing%20blueprint%20lines%2C%20clean%20technical%20diagram%20style%2C%20no%20text%20no%20words&image_size=landscape_16_9" alt="月球城市基础设施剖面图">
+
+    <div class="tier" data-reveal>
+      <div class="tier-head">
+        <span class="priority">P1</span>
+        <h3>生存基础</h3>
+      </div>
+      <div class="tier-grid">
+        <div class="tier-item">
+          <div class="sys">电力</div>
+          <div class="src">NASA "Integrated Lunar Power Strategy" 白皮书：发电、储能、电力共享是核心能力。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">氧气</div>
+          <div class="src">NASA 生命维持系统（ADD 中反复出现）。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">水</div>
+          <div class="src">NASA 月球南极水冰勘探计划。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">食物</div>
+          <div class="src">NASA "Lunar Logistics Drivers" 白皮书：物流物品包括维持生命的供应品。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">辐射防护</div>
+          <div class="src">NASA 多份白皮书涉及 crew safety 和辐射风险。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">温度控制</div>
+          <div class="src">NASA "Surface EVA" 白皮书：月球表面行走的独特挑战。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tier" data-reveal>
+      <div class="tier-head">
+        <span class="priority">P2</span>
+        <h3>运行基础</h3>
+      </div>
+      <div class="tier-grid">
+        <div class="tier-item">
+          <div class="sys">着陆场</div>
+          <div class="src">NASA "Safe and Precise Landing" 白皮书：精确着陆对 crew safety 至关重要。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">通信网络</div>
+          <div class="src">NASA "Communications and Navigation Needs" 白皮书 + ILRS 鹊桥中继星。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">居住舱</div>
+          <div class="src">NASA Moon Base User's Guide（2026 Ignition）。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">月面运输</div>
+          <div class="src">NASA "Lunar Mobility Drivers" 白皮书。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">机器人 / 自动化</div>
+          <div class="src">NASA "Humans in Space to Accomplish Science Objectives" 白皮书：人机协作。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tier" data-reveal>
+      <div class="tier-head">
+        <span class="priority">P3</span>
+        <h3>发展基础</h3>
+      </div>
+      <div class="tier-grid">
+        <div class="tier-item">
+          <div class="sys">ISRU 工厂</div>
+          <div class="src">SpaceX 内部信：月球工厂利用本地资源制造卫星。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">科研设施</div>
+          <div class="src">ILRS 五大科学主题。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">工业设施</div>
+          <div class="src">SpaceX 内部信：月球制造 + 质量投射器。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">商业设施</div>
+          <div class="src">GRU Space 月球酒店。</div>
+        </div>
+        <div class="tier-item">
+          <div class="sys">发射 / 加注设施</div>
+          <div class="src">SpaceX 内部信：在轨推进剂加注（in-space propellant transfer）。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison -->
+<section class="report" id="compare">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="agency-tag">关键数据</span>
+      <h2>四方方案对比</h2>
+      <div class="subtitle">官方文档、目标、时间线、技术与合作模式</div>
+    </div>
+
+    <div class="compare-grid" data-reveal>
+      <div class="compare-card">
+        <div class="ch">
+          <div class="agency">NASA</div>
+          <div class="type">政府机构技术架构</div>
+        </div>
+        <div class="cb">
+          <div class="compare-row"><div class="dim">官方文档</div><div class="val">ADD Rev C (2025) + 白皮书 + Moon Base User's Guide</div></div>
+          <div class="compare-row"><div class="dim">目标</div><div class="val">月面半永久基地</div></div>
+          <div class="compare-row"><div class="dim">时间线</div><div class="val">2025-2032+（分阶段）</div></div>
+          <div class="compare-row"><div class="dim">选址</div><div class="val">月球南极</div></div>
+          <div class="compare-row"><div class="dim">能源</div><div class="val">裂变堆 + 太阳能（专门白皮书）</div></div>
+          <div class="compare-row"><div class="dim">人口</div><div class="val">轮换制（semi-permanent）</div></div>
+          <div class="compare-row"><div class="dim">合作模式</div><div class="val">商业合同 + 国际合作伙伴</div></div>
+          <div class="compare-row"><div class="dim">质量投射器</div><div class="val">未提及</div></div>
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="ch">
+          <div class="agency">SpaceX</div>
+          <div class="type">企业战略内部信</div>
+        </div>
+        <div class="cb">
+          <div class="compare-row"><div class="dim">官方文档</div><div class="val">内部信 (2026-02-03) + 路透社报道</div></div>
+          <div class="compare-row"><div class="dim">目标</div><div class="val">自生长城市，通往火星文明</div></div>
+          <div class="compare-row"><div class="dim">时间线</div><div class="val">10 年内月球城市</div></div>
+          <div class="compare-row"><div class="dim">选址</div><div class="val">未明确</div></div>
+          <div class="compare-row"><div class="dim">能源</div><div class="val">未明确</div></div>
+          <div class="compare-row"><div class="dim">人口</div><div class="val">城市级</div></div>
+          <div class="compare-row"><div class="dim">合作模式</div><div class="val">自建为主</div></div>
+          <div class="compare-row"><div class="dim">质量投射器</div><div class="val highlight">明确提及 electromagnetic mass driver</div></div>
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="ch">
+          <div class="agency">中国 ILRS</div>
+          <div class="type">政府间合作框架</div>
+        </div>
+        <div class="cb">
+          <div class="compare-row"><div class="dim">官方文档</div><div class="val">路线图 V1.0 + 合作伙伴指南 V1.0 (2021)</div></div>
+          <div class="compare-row"><div class="dim">目标</div><div class="val">长期自主运行科研平台</div></div>
+          <div class="compare-row"><div class="dim">时间线</div><div class="val">2028 基本型 / 2040 完善型 / 2050 应用型</div></div>
+          <div class="compare-row"><div class="dim">选址</div><div class="val">月球南极</div></div>
+          <div class="compare-row"><div class="dim">能源</div><div class="val">未明确</div></div>
+          <div class="compare-row"><div class="dim">人口</div><div class="val">"短期有人参与"</div></div>
+          <div class="compare-row"><div class="dim">合作模式</div><div class="val">多国共建（开放加入）</div></div>
+          <div class="compare-row"><div class="dim">质量投射器</div><div class="val">未提及</div></div>
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="ch">
+          <div class="agency">GRU Space</div>
+          <div class="type">商业计划</div>
+        </div>
+        <div class="cb">
+          <div class="compare-row"><div class="dim">官方文档</div><div class="val">媒体报道</div></div>
+          <div class="compare-row"><div class="dim">目标</div><div class="val">月球酒店</div></div>
+          <div class="compare-row"><div class="dim">时间线</div><div class="val">2032 年开业</div></div>
+          <div class="compare-row"><div class="dim">选址</div><div class="val">未明确</div></div>
+          <div class="compare-row"><div class="dim">能源</div><div class="val">未明确</div></div>
+          <div class="compare-row"><div class="dim">人口</div><div class="val">4 名客人</div></div>
+          <div class="compare-row"><div class="dim">合作模式</div><div class="val">独立商业</div></div>
+          <div class="compare-row"><div class="dim">质量投射器</div><div class="val">不适用</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Implications -->
+<section class="report" id="impl">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <h2>从现实方案到游戏设计</h2>
+      <div class="subtitle">对 Lunar Frontier 的直接启示 / 七个可直接落地的设计映射</div>
+    </div>
+
+    <div class="implications-grid" data-reveal>
+      <div class="impl-card">
+        <div class="big-num">01</div>
+        <p><strong>质量投射器是 SpaceX 官方路线图的一部分。</strong>马斯克内部信明确提到 electromagnetic mass driver + 月球制造到深空部署。游戏终局目标和现实中最激进的商业航天计划完全吻合。</p>
+      </div>
+      <div class="impl-card">
+        <div class="big-num">02</div>
+        <p><strong>"先到者建基础设施，后来者加入"是 ILRS 的官方模式。</strong>ILRS 由中俄联合发起建设，其他国家后续加入，和 Moontopia 的逻辑一致。</p>
+      </div>
+      <div class="impl-card">
+        <div class="big-num">03</div>
+        <p><strong>NASA 的架构是"活的文档"。</strong>每年更新、持续演进。游戏设计文档也应该如此，不要追求一次性完美。</p>
+      </div>
+      <div class="impl-card">
+        <div class="big-num">04</div>
+        <p><strong>电力是所有人的首要瓶颈。</strong>NASA 专门发布电力策略白皮书。在游戏里，电力应该是第一个需要解决的硬约束。</p>
+      </div>
+      <div class="impl-card">
+        <div class="big-num">05</div>
+        <p><strong>物流是持续多年的核心议题。</strong>NASA 连续多年发布货运、移动性、物流白皮书。在游戏里，发射配额和月面运输应该是贯穿始终的核心系统。</p>
+      </div>
+      <div class="impl-card">
+        <div class="big-num">06</div>
+        <p><strong>所有人都回避"永久居住"。</strong>NASA 用 semi-permanent，ILRS 用"短期有人参与"。在游戏里，人口应该是轮换制而非自然增长，和"人口从地球送来"的设定一致。</p>
+      </div>
+      <div class="impl-card">
+        <div class="big-num">07</div>
+        <p><strong>SpaceX 的"天基数据中心到月球基地"资金链。</strong>为游戏的经济系统提供了现实参照：月球基地的资金可以来自太空商业活动，而非仅仅地球拨款。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="info">
+      <div class="title">月球基地设想方案汇总</div>
+      <p>Lunar Frontier 项目参考报告。基于一手官方信息源整理，检索时间 2026-06-21。供游戏设计参照使用，非最终设计文档。</p>
+    </div>
+    <a href="#" class="back-top">返回顶部 ↑</a>
+  </div>
+</footer>
+
+<script>
+  (function() {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      document.querySelectorAll('[data-reveal]').forEach(function(el) {
+        el.classList.add('revealed');
+      });
+      return;
+    }
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('[data-reveal]').forEach(function(el) {
+      observer.observe(el);
+    });
+  })();
+</script>
+
+</body>
+</html>
